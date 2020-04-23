@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background = "@drawable/gradient"
+    tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="390dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical"
+        android:background="@drawable/login_register"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            app:fontFamily="@font/comicneue_bold"
+            android:textSize="25sp"
+            android:textColor="#fff"/>
+        <EditText
+            android:id = "@+id/email"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="21dp"
+            android:hint="E-mail"
+            android:backgroundTint="@android:color/white"
+            android:textColor="#fff"
+            android:drawableLeft="@drawable/ic_email_black_24dp"
+            android:drawablePadding="15dp"
+            android:textColorHint="#fff"/>
+        <EditText
+            android:id = "@+id/password"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="30dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="#fff"
+            android:backgroundTint="@android:color/white"
+            android:textColorHint="#fff"
+            android:drawableLeft="@drawable/ic_vpn_key_black_24dp"
+            android:drawablePadding="15dp"/>
+        <Button
+            android:id = "@+id/signin"
+            android:background="@drawable/rounded_button"
+            android:layout_marginTop="21dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:text="Sign In"/>
+        <TextView
+            android:id="@+id/signin_to_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Do not have an account? Register"
+            android:textSize="12sp"
+            android:textColor="#fff"/>
+    </LinearLayout>
+</LinearLayout>
