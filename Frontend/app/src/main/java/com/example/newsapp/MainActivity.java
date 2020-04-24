@@ -1,5 +1,6 @@
 package com.example.newsapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,15 +11,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.newsapp.Retrofit.IMyService;
-import com.example.newsapp.Retrofit.RetrofitClient;
+//import com.example.newsapp.Retrofit.IMyService;
+//import com.example.newsapp.Retrofit.RetrofitClient;
+
+import java.util.HashMap;
 
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private  boolean mIsShowPass = false;
@@ -26,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView register;
     private Button signin;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
-    IMyService iMyService;
-
+    private String BASE_URL = "https://boiling-springs-16549.herokuapp.com/";
+    private Retrofit retrofit;
+    private RetrofitInterface retrofitInterface;
     @Override
     protected void onStop() {
         compositeDisposable.clear();
@@ -48,35 +56,47 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,Register.class));
             }
         });
-        Retrofit retrofitClient = RetrofitClient.getInstance();
-        iMyService = retrofitClient.create(IMyService.class);
-        signin.setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.signin).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                loginUser(email.getText().toString(),password.getText().toString());
+            public void onClick(View view) {
+                handleLoginDialog(email.getText().toString() ,password.getText().toString());
             }
         });
     }
 
-    private void loginUser(String email, String password) {
+    private void handleLoginDialog(String email , String password )
+    {
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        retrofitInterface = retrofit.create(RetrofitInterface.class);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("email", email);
+        map.put("password", password);
+        Call<Void> call = retrofitInterface.executeLogin(map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
-            if (email.length() == 0) {
-                Toast.makeText(this, "Please enter the email", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (password.length() == 0) {
-                Toast.makeText(this, "Please enter the password", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            compositeDisposable.add(iMyService.loginUser(email, password)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String response) throws Exception {
-                            Toast.makeText(MainActivity.this, "" + response, Toast.LENGTH_SHORT).show();
-                        }
-                    }));
+                if (response.code() == 200) {
 
+                    Toast.makeText(MainActivity.this, "Logged In Successfully",
+                            Toast.LENGTH_LONG).show();
+
+                } else if (response.code() == 404) {
+                    Toast.makeText(MainActivity.this, "Wrong Credentials",
+                            Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

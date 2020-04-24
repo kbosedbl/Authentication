@@ -4,13 +4,11 @@ const cors = require('cors');
 const app = express();
 const knex = require('knex');
 const database = knex({
-	client: 'pg',
-	connection: {
-		host: '127.0.0.1',
-		user: 'postgres',
-		password: 'kbosedbl',
-		database: 'android'
-	}
+  client: 'pg', 
+  connection: {
+    connectionString : process.env.DATABASE_URL,
+    ssl : true,
+  }
 });
 
 database.select('*').from('login');
@@ -26,22 +24,22 @@ app.post('/login' , (req , res) => {
 				return database.select('*').from('login')
 					.where('email' , '=' , req.body.email)
 					.then((user) => {
-						res.status(400).json("Logged in Successfully");
+						res.status(200).json("Logged in Successfully");
 						console.log('Successfully signed in');
 					})
 					.catch((err) => {
-						res.status(200).json("Incorrect");
+						res.status(404).json("Incorrect");
 						console.log('User not found');
 					})
 			}
 			else
 			{
-				res.status(400).json("Unable to login");
+				res.status(404).json("Unable to login");
 				console.log('Unable to login');
 			}
 		})
 		.catch(err => {
-			res.status(200).json('Incorrect');
+			res.status(404).json('Incorrect');
 			console.log('Unable to login');
 		});
 });
@@ -57,14 +55,14 @@ app.post(('/register') , (req , res) => {
 		})
 		.then(user => {
 			console.log('Successfull registration');
-			res.status(400).json("Registered Successfully");
+			res.status(200).json("Registered Successfully");
 		})
 		.catch(err => {
 			console.log('Registration failed')
-			res.status(400).json("Registration failed");
+			res.status(404).json("Registration failed");
 		})
 });
 
-app.listen(3000, () => {
-    console.log("Listening on port 3000...")
-});
+app.listen(process.env.PORT||3000, ()=>{
+	console.log('app is running on port ${process.env.port}');
+})
